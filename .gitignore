@@ -1,0 +1,5 @@
+node_modules/
+.sam/
+build/
+*.log
+.env

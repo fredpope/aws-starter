@@ -1,0 +1,12 @@
+{
+  "name": "aws-starter",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "sam build",
+    "local-api": "sam local start-api --port 3000",
+    "local-db": "docker-compose -f docker/docker-compose.yml up -d"
+  },
+  "devDependencies": {
+    "aws-sam-cli": "latest"
+  }
+}

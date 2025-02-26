@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  NextJsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: nextjs/index.handler
+      Runtime: nodejs18.x
+      MemorySize: 1024
+      Timeout: 10
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      VpcConfig:
+        SubnetIds: !Ref SubnetIds
+        SecurityGroupIds: !Ref SecurityGroupIds
+      Environment:
+        Variables:
+          DATABASE_URL: !Sub "postgresql://${DBUser}:${DBPassword}@${DBEndpoint}:5432/mydb"
+
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: api/index.handler
+      Runtime: nodejs18.x
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /api/{proxy+}
+            Method: ANY
+      VpcConfig:
+        SubnetIds: !Ref SubnetIds
+        SecurityGroupIds: !Ref SecurityGroupIds
+      Environment:
+        Variables:
+          DATABASE_URL: !Sub "postgresql://${DBUser}:${DBPassword}@${DBEndpoint}:5432/mydb"
+
+  DatabaseCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      Engine: aurora-postgresql
+      EngineMode: serverless
+      ScalingConfiguration:
+        MinCapacity: 1
+        MaxCapacity: 4
+        AutoPause: true
+      MasterUsername: !Ref DBUser
+      MasterUserPassword: !Ref DBPassword
+      DatabaseName: mydb
+      VpcSecurityGroupIds: !Ref SecurityGroupIds
+      SubnetIds: !Ref SubnetIds
+
+Parameters:
+  DBUser: { Type: String, Default: "admin" }
+  DBPassword: { Type: String, NoEcho: true }
+  SubnetIds: { Type: List<AWS::EC2::Subnet::Id> }
+  SecurityGroupIds: { Type: List<AWS::EC2::SecurityGroup::Id> }
+
+Outputs:
+  ApiUrl:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

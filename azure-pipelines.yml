@@ -1,0 +1,41 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install -g aws-sam-local
+    npm install
+  displayName: 'Install dependencies'
+
+- script: |
+    sam build
+  displayName: 'Build SAM application'
+
+- script: |
+    echo "Running tests (placeholder)"
+  displayName: 'Run tests'
+
+- task: AWSShellScript@1
+  inputs:
+    awsCredentials: 'aws-service-connection'
+    regionName: 'us-east-1'
+    scriptType: 'inline'
+    inlineScript: |
+      sam deploy --stack-name my-app-stack \
+        --capabilities CAPABILITY_IAM \
+        --parameter-overrides DBUser=admin DBPassword=$DB_PASSWORD \
+        SubnetIds=subnet-123,subnet-456 SecurityGroupIds=sg-789
+  env:
+    DB_PASSWORD: $(dbPassword)
+  displayName: 'Deploy to AWS'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))

@@ -314,4 +314,4 @@ your-repo/
 - Store `DB_PASSWORD` securely in Azure DevOps variables.
 - Add tests in `api/` and `nextjs/` if needed, and update the pipeline to run them.
 
-This repo gives you everything to develop locally and deploy to AWS via Azure DevOps. Let me know if you need adjustments!
+This repo provides everything to develop locally and deploy to AWS via Azure DevOps. 

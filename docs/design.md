@@ -1,5 +1,3 @@
-Let’s structure your repository with all the necessary files for your PostgreSQL database, REST API, Next.js serverless app, and CI/CD pipeline using AWS SAM and Azure DevOps. I’ll outline the directory structure, explain each file’s purpose, and place them where they belong. This will give you a fully functional repo ready to run locally and deploy to AWS.
-
 ### Repository Structure
 
 Here’s the recommended layout:
